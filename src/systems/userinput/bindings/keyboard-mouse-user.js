@@ -155,8 +155,24 @@ export const keyboardMouseUserBindings = addSetsToBindings({
     },
     {
       src: { value: paths.device.keyboard.key("x") },
-      dest: { value: paths.actions.takeSnapshot },
+      dest: {
+        value: paths.actions.startGazeTeleport
+      },
+      xform: xforms.rising
+    },
+    {
+      src: { value: paths.device.keyboard.key("x") },
+      dest: {
+        value: paths.actions.gazeTeleportActive
+      },
       xform: xforms.copy
+    },
+    {
+      src: { value: paths.device.keyboard.key("x") },
+      dest: {
+        value: paths.actions.stopGazeTeleport
+      },
+      xform: xforms.falling
     },
     {
       src: { value: paths.device.smartMouse.cursorPose },
@@ -362,26 +378,6 @@ export const keyboardMouseUserBindings = addSetsToBindings({
         value: paths.actions.logInteractionState
       },
       xform: xforms.rising
-    },
-    {
-      src: {
-        value: paths.device.mouse.buttonRight
-      },
-      dest: {
-        value: paths.actions.startGazeTeleport
-      },
-      xform: xforms.rising,
-      priority: 100
-    },
-    {
-      src: {
-        value: paths.device.mouse.buttonRight
-      },
-      dest: {
-        value: paths.actions.stopGazeTeleport
-      },
-      xform: xforms.falling,
-      priority: 100
     },
     {
       src: { value: paths.device.keyboard.key("o") },

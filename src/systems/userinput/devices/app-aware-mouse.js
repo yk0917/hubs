@@ -50,6 +50,7 @@ export class AppAwareMouseDevice {
 
     const buttonLeft = frame.get(paths.device.mouse.buttonLeft);
     const buttonRight = frame.get(paths.device.mouse.buttonRight);
+    const isTeleporting = frame.get(paths.actions.gazeTeleportActive);
     if (buttonLeft && !this.prevButtonLeft && this.cursorController) {
       const rawIntersections = [];
       this.cursorController.raycaster.intersectObjects(
@@ -90,7 +91,7 @@ export class AppAwareMouseDevice {
       this.clickedOnAnything = false;
     }
 
-    if ((!this.clickedOnAnything && buttonLeft) || buttonRight) {
+    if ((!this.clickedOnAnything && buttonLeft) || buttonRight || isTeleporting) {
       const movementXY = frame.get(paths.device.mouse.movementXY);
       if (movementXY) {
         frame.setVector2(paths.device.smartMouse.cameraDelta, movementXY[0], movementXY[1]);
