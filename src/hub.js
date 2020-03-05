@@ -1478,6 +1478,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     addToPresenceLog(incomingMessage);
   });
 
+  let lastBps = 0;
+  setInterval(() => {
+    if (window.bps && lastBps != window.bps) {
+      const now = Date.now();
+      addToPresenceLog({
+        type: "stats",
+        name: window.APP.hubChannel.presence.state[NAF.clientId].metas[0].profile.displayName,
+        message: `${now} - ${window.bps} Bps at ${window.msgs} msgs ps`
+      });
+    }
+    lastBps = window.bps;
+  }, 100);
+
   hubPhxChannel.on("hub_refresh", ({ session_id, hubs, stale_fields }) => {
     const hub = hubs[0];
     const userInfo = hubChannel.presence.state[session_id];

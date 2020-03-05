@@ -48,6 +48,12 @@ export default class PresenceLog extends Component {
             <b>{e.name}</b>&nbsp;<FormattedMessage id={`presence.${e.type}`} />
           </div>
         );
+      case "stats":
+        return (
+          <div key={e.key} className={classNames(entryClasses)}>
+            <b>{e.name}</b>&nbsp; reports: {e.message}
+          </div>
+        );
       case "display_name_changed":
         return (
           <div key={e.key} className={classNames(entryClasses)}>
