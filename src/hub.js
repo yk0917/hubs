@@ -1482,11 +1482,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setInterval(() => {
     if (window.bps && lastBps != window.bps) {
       const now = Date.now();
-      addToPresenceLog({
-        type: "stats",
-        name: window.APP.hubChannel.presence.state[NAF.clientId].metas[0].profile.displayName,
-        message: `${now} - ${window.bps} Bps at ${window.msgs} msgs ps`
-      });
+      hubChannel.sendMessage(`${now} - ${window.bps} Bps at ${window.msgs} msgs ps`);
     }
     lastBps = window.bps;
   }, 100);
