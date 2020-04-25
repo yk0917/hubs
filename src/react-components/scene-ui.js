@@ -124,7 +124,7 @@ class SceneUI extends Component {
               parentScene.attributions &&
               parentScene.attributions.creator && (
                 <span className="remix">
-                  &nbsp;(Remixed from&nbsp;
+                  &nbsp;(Remixed fron&nbsp;
                   {toAttributionSpan({
                     name: parentScene.name,
                     url: parentScene.url,
