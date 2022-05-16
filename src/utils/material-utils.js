@@ -30,6 +30,9 @@ export function mapMaterials(object3D, fn) {
 
 // HubsMeshBasicMaterial exists because we need to be able to set the emissiveMap in the avatar preview.
 // It also allows the material to be properly copied/cloned.
+// It also resizes huge textures for better memory usage and shorter main thread blocking time.
+const HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_WIDTH = 1024;
+const HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_HEIGHT = 1024;
 class HubsMeshBasicMaterial extends THREE.MeshBasicMaterial {
   static fromMeshStandardMaterial(source) {
     const material = new HubsMeshBasicMaterial();
@@ -40,17 +43,29 @@ class HubsMeshBasicMaterial extends THREE.MeshBasicMaterial {
 
     material.emissive.copy(source.emissive);
     material.emissiveIntensity = source.emissiveIntensity;
-    material.emissiveMap = source.emissiveMap;
+    material.emissiveMap = resizeTexture(source.emissiveMap,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_WIDTH,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_HEIGHT);
 
-    material.map = source.map;
+    material.map = resizeTexture(source.map,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_WIDTH,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_HEIGHT);
 
-    material.lightMap = source.lightMap;
+    material.lightMap = resizeTexture(source.lightMap,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_WIDTH,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_HEIGHT);
+
     material.lightMapIntensity = source.lightMapIntensity;
 
-    material.aoMap = source.aoMap;
+    material.aoMap = resizeTexture(source.aoMap,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_WIDTH,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_HEIGHT);
+
     material.aoMapIntensity = source.aoMapIntensity;
 
-    material.alphaMap = source.alphaMap;
+    material.alphaMap = resizeTexture(source.alphaMap,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_WIDTH,
+      HUBS_MESH_BASIC_MATERIAL_TEXTURE_MAX_HEIGHT);
 
     material.wireframe = source.wireframe;
     material.wireframeLinewidth = source.wireframeLinewidth;
@@ -240,5 +255,68 @@ export function disposeTexture(texture) {
     texture.hls = null;
   }
 
+  if (originalTextureUuidMap.has(texture)) {
+    originalTextureUuidMap.delete(texture);
+    resizedTextureCache.delete(originalTextureUuidMap.get(texture));
+  }
+
   texture.dispose();
+}
+
+const resizedTextureCache = new Map();
+const originalTextureUuidMap = new WeakMap();
+function resizeTexture(texture, width, height) {
+  if (!texture) {
+    return texture;
+  }
+
+  if (resizedTextureCache.has(texture.uuid)) {
+    return resizedTextureCache.get(texture.uuid);
+  }
+
+  // Ignore compressed textures and video textures for now.
+  if (texture.isCompressedTexture || texture.isVideoTexture ) {
+    return texture;
+  }
+
+  const image = texture.image;
+
+  // Just in case.
+  if (!image || image.width === undefined || image.height === undefined) {
+    return texture;
+  }
+
+  if (image.width <= width && image.height <= height) {
+    return texture;
+  }
+
+  const newWidth = Math.min(width, image.width);
+  const newHeight = Math.min(height, image.height);
+
+  const useOffscreenCanvas = typeof OffscreenCanvas !== 'undefined';
+
+  const canvas = useOffscreenCanvas
+    ? new OffscreenCanvas(newWidth, newHeight) : document.createElement('canvas');
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+  const context = canvas.getContext('2d');
+  context.drawImage(image, 0, 0, newWidth, newHeight);
+
+  const resizedTexture = new THREE.Texture().copy(texture);
+  resizedTexture.image = useOffscreenCanvas
+    ? canvas.transferToImageBitmap() : canvas;
+
+  resizedTexture.format = THREE.RGBAFormat;
+  resizedTexture.type = THREE.UnsignedByteType;
+
+  // Assume the texture image is ready to upload to texture but has not been uploaded yet.
+  resizedTexture.needsUpdate = true;
+
+  // Assume the textures are not shared with non-HubsMeshBasicMaterials.
+  disposeTexture(texture);
+
+  resizedTextureCache.set(texture.uuid, resizedTexture);
+  originalTextureUuidMap.set(resizedTexture, texture.uuid);
+
+  return resizedTexture;
 }
