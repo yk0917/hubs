@@ -47,6 +47,7 @@ import { singleActionButtonSystem } from "./single-action-button-system";
 import { constraintsSystem } from "./bit-constraints-system";
 import { loggerSystem } from "./logger-system";
 // import { holdableButtonSystem } from "./holdable-button-system";
+import { physicsCompatSystem } from "./bit-physics";
 
 AFRAME.registerSystem("hubs-systems", {
   init() {
@@ -97,6 +98,9 @@ AFRAME.registerSystem("hubs-systems", {
 
     applyNetworkUpdates(world);
     onOwnershipLost(world);
+
+    physicsCompatSystem(APP.world);
+
     networkedTransformSystem(world);
 
     const systems = AFRAME.scenes[0].systems;
