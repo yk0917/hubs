@@ -26,8 +26,6 @@ import { MenuAnimationSystem } from "./menu-animation-system";
 import { AudioSettingsSystem } from "./audio-settings-system";
 import { AudioSystem } from "./audio-system";
 import { ShadowSystem } from "./shadow-system";
-import { mediaFramesSystem } from "./bit-media-frames";
-import { mediaFrameAnimationMixerSystem } from "./bit-media-frame-animation-mixers";
 import { InspectYourselfSystem } from "./inspect-yourself-system";
 import { EmojiSystem } from "./emoji-system";
 import { AudioZonesSystem } from "./audio-zones-system";
@@ -46,6 +44,9 @@ import { networkedTransformSystem } from "./networked-transform";
 import { singleActionButtonSystem } from "./single-action-button-system";
 import { constraintsSystem } from "./bit-constraints-system";
 import { loggerSystem } from "./logger-system";
+import { mediaFramesSystem } from "./bit-media-frames";
+import { mediaFrameAnimationMixerSystem } from "./bit-media-frame-animation-mixers";
+import { cameraSystem } from "./bit-camera-system";
 // import { holdableButtonSystem } from "./holdable-button-system";
 import { physicsCompatSystem } from "./bit-physics";
 
@@ -145,6 +146,7 @@ AFRAME.registerSystem("hubs-systems", {
     this.batchManagerSystem.tick(t);
     this.inspectYourselfSystem.tick(this.el, systems.userinput, this.cameraSystem);
     this.cameraSystem.tick(this.el, dt);
+    cameraSystem(world);
     this.waypointSystem.tick(t, dt);
     this.menuAnimationSystem.tick(t);
     this.spriteSystem.tick(t, dt);
