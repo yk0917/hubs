@@ -42,7 +42,6 @@ import { removeObject3DSystem } from "./remove-object3D-system";
 import { networkedTransformSystem } from "./networked-transform";
 import { buttonSystems } from "./single-action-button-system";
 import { constraintsSystem } from "./bit-constraints-system";
-import { loggerSystem } from "./logger-system";
 import { mediaFramesSystem } from "./bit-media-frames";
 import { mediaFrameAnimationMixerSystem } from "./bit-media-frame-animation-mixers";
 import { cameraSystem } from "./bit-camera-system";
@@ -109,7 +108,6 @@ AFRAME.registerSystem("hubs-systems", {
 
     buttonSystems(world);
     constraintsSystem(world, systems.userinput);
-    loggerSystem(world);
 
     // We run this earlier in the frame so things have a chance to override properties run by animations
     this.animationMixerSystem.tick(dt);
