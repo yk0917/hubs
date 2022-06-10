@@ -47,6 +47,7 @@ import { mediaFrameAnimationMixerSystem } from "./bit-media-frame-animation-mixe
 import { cameraSystem } from "./bit-camera-system";
 // import { holdableButtonSystem } from "./holdable-button-system";
 import { physicsCompatSystem } from "./bit-physics";
+import { destroyAtExtremeDistanceSystem } from "./bit-destroy-at-extreme-distances";
 
 AFRAME.registerSystem("hubs-systems", {
   init() {
@@ -154,6 +155,7 @@ AFRAME.registerSystem("hubs-systems", {
     this.gainSystem.tick();
     this.nameTagSystem.tick();
 
+    destroyAtExtremeDistanceSystem(world);
     removeNetworkedObjectButtonSystem(world);
     removeObject3DSystem(world);
 
